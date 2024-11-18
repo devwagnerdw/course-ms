@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface UserService {
 
     Page<UserModel> findAll(Specification<UserModel> and, Pageable pageable);
+
+    UserModel save(UserModel userModel);
 }
