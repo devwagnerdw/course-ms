@@ -33,9 +33,9 @@ public class UserConsumer {
             case UPDATE:
                 userService.save(userModel);
                 break;
-//            case DELETE:
-//                userService.delete(userEventDto.getUserId());
-//                break;
+            case DELETE:
+                userService.delete(userEventDto.getUserId());
+                break;
         }
     }
 }

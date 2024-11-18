@@ -13,4 +13,6 @@ public interface UserService {
     Page<UserModel> findAll(Specification<UserModel> and, Pageable pageable);
 
     UserModel save(UserModel userModel);
+
+    void delete(UUID userId);
 }
