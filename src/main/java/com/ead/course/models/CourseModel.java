@@ -1,20 +1,20 @@
 package com.ead.course.models;
 
-
 import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;
+import jakarta.persistence.Entity;
+import lombok.Data;
+import jakarta.persistence.*;
+import java.io.Serializable;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
