@@ -7,6 +7,10 @@ import com.ead.course.models.UserModel;
 import com.ead.course.services.CourseService;
 import com.ead.course.services.UserService;
 import com.ead.course.specifications.SpecificationTemplate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,12 @@ public class CourseUserController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @GetMapping("/courses/{courseId}/users")
+    @Operation(summary = "Obter todos os usuários matriculados em um curso",
+            description = "Retorna uma lista paginada de usuários que estão matriculados no curso especificado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso não encontrado", content = @Content)
+    })
     public ResponseEntity<Object> getAllUsersByCourse(SpecificationTemplate.UserSpec spec,
                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
                                                       @PathVariable(value = "courseId") UUID courseId){
@@ -46,6 +56,13 @@ public class CourseUserController {
 
     @PreAuthorize("hasAnyRole('STUDENT')")
     @PostMapping("/courses/{courseId}/users/subscription")
+    @Operation(summary = "Inscrever um usuário em um curso",
+            description = "Permite que um estudante se inscreva em um curso específico, caso atenda aos requisitos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Inscrição criada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso ou usuário não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Conflito - Inscrição já existe ou usuário está bloqueado")
+    })
     public  ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
                                                                 @RequestBody @Valid SubscriptionDto subscriptionDto){
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);

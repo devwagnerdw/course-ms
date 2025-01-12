@@ -5,6 +5,9 @@ import com.ead.course.models.CourseModel;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.SpecificationTemplate;
 import com.ead.course.validation.CourseValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +41,11 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
+    @Operation(summary = "Salvar um curso", description = "Cria um novo curso com as informações fornecidas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Curso criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     public ResponseEntity<Object> saveCourse(@RequestBody CourseDto courseDto, Errors errors){
         log.debug("POST saveCourse courseDto received {} ", courseDto.toString());
         courseValidator.validate(courseDto, errors);
@@ -56,6 +64,11 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
+    @Operation(summary = "Excluir um curso", description = "Exclui um curso específico pelo ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Curso excluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    })
     public ResponseEntity<Object> deleteCourse(@PathVariable(value="courseId") UUID courseId){
         log.debug("DELETE deleteCourse courseId received {} ", courseId);
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
@@ -70,6 +83,11 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
+    @Operation(summary = "Atualizar um curso", description = "Atualiza os detalhes de um curso específico pelo ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Curso atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    })
     public ResponseEntity<Object> updateCourse(@PathVariable(value="courseId") UUID courseId,
                                                @RequestBody @Valid CourseDto courseDto){
         log.debug("PUT updateCourse courseDto received {} ", courseDto.toString());
@@ -92,6 +110,10 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
+    @Operation(summary = "Listar cursos", description = "Lista todos os cursos disponíveis com opções de paginação e filtragem.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso")
+    })
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec,
                                                            @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
                                                            @RequestParam(required = false) UUID userId){
@@ -105,6 +127,11 @@ public class CourseController {
 
     @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
+    @Operation(summary = "Obter detalhes de um curso", description = "Retorna os detalhes de um curso específico pelo ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Detalhes do curso retornados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    })
     public ResponseEntity<Object> getOneCourse(@PathVariable(value="courseId") UUID courseId){
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
         if(!courseModelOptional.isPresent()){

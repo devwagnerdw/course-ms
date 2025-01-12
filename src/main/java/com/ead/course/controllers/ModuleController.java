@@ -7,6 +7,9 @@ import com.ead.course.models.ModuleModel;
 import com.ead.course.services.CourseService;
 import com.ead.course.services.ModuleService;
 import com.ead.course.specifications.SpecificationTemplate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +41,11 @@ public class ModuleController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping("/courses/{courseId}/modules")
+    @Operation(summary = "Salvar módulo", description = "Cria um novo módulo para o curso especificado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Módulo criado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    })
     public ResponseEntity<Object> saveModule(@PathVariable(value="courseId") UUID courseId,
                                              @RequestBody @Valid ModuleDto moduleDto){
         log.debug("POST saveModule moduleDto received {} ", moduleDto.toString());
@@ -57,6 +65,11 @@ public class ModuleController {
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/courses/{courseId}/modules/{moduleId}")
+    @Operation(summary = "Deletar módulo", description = "Deleta o módulo especificado do curso.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Módulo deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Módulo não encontrado para este curso")
+    })
     public ResponseEntity<Object> deleteModule(@PathVariable(value="courseId") UUID courseId,
                                                @PathVariable(value="moduleId") UUID moduleId){
         log.debug("DELETE deleteModule moduleId received {} ", moduleId);
@@ -70,8 +83,14 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
     }
 
+
     @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/courses/{courseId}/modules/{moduleId}")
+    @Operation(summary = "Atualizar módulo", description = "Atualiza os dados do módulo especificado no curso.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Módulo atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Módulo não encontrado para este curso")
+    })
     public ResponseEntity<Object> updateModule(@PathVariable(value="courseId") UUID courseId,
                                                @PathVariable(value="moduleId") UUID moduleId,
                                                @RequestBody @Valid ModuleDto moduleDto){
@@ -89,8 +108,14 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body(moduleModel);
     }
 
+
+
     @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/courses/{courseId}/modules")
+    @Operation(summary = "Listar módulos", description = "Lista todos os módulos de um curso com opções de filtragem e paginação.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Módulos listados com sucesso")
+    })
     public ResponseEntity<Page<ModuleModel>> getAllModules(@PathVariable(value="courseId") UUID courseId,
                                                            SpecificationTemplate.ModuleSpec spec,
                                                            @PageableDefault(page = 0, size = 10, sort = "moduleId", direction = Sort.Direction.ASC) Pageable pageable){
@@ -99,6 +124,11 @@ public class ModuleController {
 
     @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/courses/{courseId}/modules/{moduleId}")
+    @Operation(summary = "Obter módulo", description = "Recupera os detalhes de um módulo específico de um curso.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Módulo recuperado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Módulo não encontrado para este curso")
+    })
     public ResponseEntity<Object> getOneModule(@PathVariable(value="courseId") UUID courseId,
                                                @PathVariable(value="moduleId") UUID moduleId){
         Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
